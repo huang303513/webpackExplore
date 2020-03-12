@@ -101,6 +101,7 @@ module.exports = {
     }),
     //不需要传参数喔，它可以找到 outputPath
     new CleanWebpackPlugin(),
+    //直接拷贝文件
     new CopyWebpackPlugin(
       [
         {
@@ -114,6 +115,7 @@ module.exports = {
         ignore: ["other.js"]
       }
     ),
+    // 全局变量引用
     new webpack.ProvidePlugin({
       React: "react",
       Component: ["react", "Component"],
@@ -124,7 +126,8 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "css/[name].css" //个人习惯将css文件放在单独目录下
     }),
-    new OptimizeCssPlugin()
+    new OptimizeCssPlugin(), //CSS压缩
+    new webpack.HotModuleReplacementPlugin(), //热更新插件
   ],
 
   devServer: {
@@ -134,7 +137,8 @@ module.exports = {
     stats: "errors-only", //终端仅打印 error
     overlay: false, //默认不启用
     clientLogLevel: "silent", //日志等级
-    compress: true //是否启用 gzip 压缩
+    compress: true, //是否启用 gzip 压缩
+    hot: true, //是否启用热更新
   },
 
   devtool: isDev ? "cheap-module-eval-source-map" : "source-map"
