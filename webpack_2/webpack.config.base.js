@@ -13,14 +13,18 @@ const config = require("./public/config")[isDev ? "dev" : "build"];
 module.exports = {
   mode: isDev ? "development" : "production",
   // entry: "./src/index.js", //webpack的默认配置
-  entry:{
-    index: './src/index.js',
-    login: './src/login.js'
+  entry: {
+    index: "./src/index.js",
+    login: "./src/login.js"
   },
   output: {
     path: path.resolve(__dirname, "dist"), //必须是绝对路径
     filename: "[name].[hash:6].js",
-    publicPath: isDev ? "/" : "./", //通常是CDN地址
+    publicPath: isDev ? "/" : "./" //通常是CDN地址
+  },
+  resolve: {
+    modules: ["./src", "node_modules"],
+    extensions: ["web.js", ".js"] //当然，你还可以配置 .json, .css
   },
   module: {
     rules: [
@@ -79,7 +83,7 @@ module.exports = {
               esModule: false,
               name: "[name]_[hash:6].[ext]",
               outputPath: "assets",
-              publicPath: "../assets/",
+              publicPath: "../assets/"
             }
           }
         ],
@@ -97,7 +101,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
       filename: "index.html", //打包后的文件名
-      chunks: ['index'],
+      chunks: ["index"],
       minify: {
         removeAttributeQuotes: false, //是否删除属性的双引号
         collapseWhitespace: false //是否折叠空白
@@ -108,7 +112,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/login.html",
       filename: "login.html", //打包后的文件名
-      chunks: ['login'],
+      chunks: ["login"],
       minify: {
         removeAttributeQuotes: false, //是否删除属性的双引号
         collapseWhitespace: false //是否折叠空白
@@ -132,6 +136,11 @@ module.exports = {
         ignore: ["other.js"]
       }
     ),
+    new MiniCssExtractPlugin({
+      filename: "css/[name].css" //个人习惯将css文件放在单独目录下
+    }),
+    new OptimizeCssPlugin(), //CSS压缩
+    new webpack.HotModuleReplacementPlugin(), //热更新插件
     // 全局变量引用
     new webpack.ProvidePlugin({
       React: "react",
@@ -139,12 +148,7 @@ module.exports = {
       Vue: ["vue/dist/vue.esm.js", "default"],
       $: "jquery",
       _map: ["lodash", "map"]
-    }),
-    new MiniCssExtractPlugin({
-      filename: "css/[name].css" //个人习惯将css文件放在单独目录下
-    }),
-    new OptimizeCssPlugin(), //CSS压缩
-    new webpack.HotModuleReplacementPlugin(), //热更新插件
+    })
   ],
 
   devServer: {
@@ -155,9 +159,11 @@ module.exports = {
     overlay: false, //默认不启用
     clientLogLevel: "silent", //日志等级
     compress: true, //是否启用 gzip 压缩
-    hot: true, //是否启用热更新
+    hot: true //是否启用热更新
   },
 
   // devtool: isDev ? "cheap-module-eval-source-map" : "source-map"
-  devtool: isDev ? "cheap-module-eval-source-map" : "cheap-module-eval-source-map"
+  devtool: isDev
+    ? "cheap-module-eval-source-map"
+    : "cheap-module-eval-source-map"
 };
