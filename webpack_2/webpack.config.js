@@ -12,11 +12,15 @@ const config = require("./public/config")[isDev ? "dev" : "build"];
 
 module.exports = {
   mode: isDev ? "development" : "production",
-  entry: "./src/index.js", //webpack的默认配置
+  // entry: "./src/index.js", //webpack的默认配置
+  entry:{
+    index: './src/index.js',
+    login: './src/login.js'
+  },
   output: {
     path: path.resolve(__dirname, "dist"), //必须是绝对路径
-    filename: "bundle.[hash:6].js",
-    publicPath: "/" //通常是CDN地址
+    filename: "[name].[hash:6].js",
+    publicPath: isDev ? "/" : "./", //通常是CDN地址
   },
   module: {
     rules: [
@@ -74,7 +78,8 @@ module.exports = {
               limit: 10240, //10K
               esModule: false,
               name: "[name]_[hash:6].[ext]",
-              outputPath: "assets"
+              outputPath: "assets",
+              publicPath: "../assets/",
             }
           }
         ],
@@ -92,6 +97,18 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
       filename: "index.html", //打包后的文件名
+      chunks: ['index'],
+      minify: {
+        removeAttributeQuotes: false, //是否删除属性的双引号
+        collapseWhitespace: false //是否折叠空白
+      },
+      config: config.template
+      // hash: true //是否加上hash，默认是 false
+    }),
+    new HtmlWebpackPlugin({
+      template: "./public/login.html",
+      filename: "login.html", //打包后的文件名
+      chunks: ['login'],
       minify: {
         removeAttributeQuotes: false, //是否删除属性的双引号
         collapseWhitespace: false //是否折叠空白
@@ -141,5 +158,6 @@ module.exports = {
     hot: true, //是否启用热更新
   },
 
-  devtool: isDev ? "cheap-module-eval-source-map" : "source-map"
+  // devtool: isDev ? "cheap-module-eval-source-map" : "source-map"
+  devtool: isDev ? "cheap-module-eval-source-map" : "cheap-module-eval-source-map"
 };

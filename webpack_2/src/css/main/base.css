@@ -2,3 +2,18 @@ div {
     color: green;
     font-size: 20px;
 }
+
+::placeholder {
+    color: gray;
+}
+
+button {
+    border-radius: 5px;
+    padding: 20px 20px;
+    border: 1px solid beige;
+    background: transparent;
+    outline: none;
+}
+button:hover {
+    background:rgba(255, 0, 0, 0.7);
+}
