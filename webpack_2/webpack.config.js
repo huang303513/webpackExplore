@@ -4,6 +4,8 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCssPlugin = require("optimize-css-assets-webpack-plugin");
 
 const isDev = process.env.NODE_ENV === "development";
 const config = require("./public/config")[isDev ? "dev" : "build"];
@@ -39,7 +41,13 @@ module.exports = {
       {
         test: /\.(le|c)ss$/,
         use: [
-          "style-loader",
+          {
+            loader: MiniCssExtractPlugin.loader, //替换之前的 style-loader
+            options: {
+              hmr: isDev,
+              reloadAll: true
+            }
+          },
           "css-loader",
           {
             loader: "postcss-loader",
@@ -47,7 +55,7 @@ module.exports = {
               plugins: function() {
                 return [
                   require("autoprefixer")({
-                    overrideBrowserslist: [">0.25%", "not dead"]
+                    overrideBrowserslist: ["defaults"]
                   })
                 ];
               }
@@ -112,7 +120,11 @@ module.exports = {
       Vue: ["vue/dist/vue.esm.js", "default"],
       $: "jquery",
       _map: ["lodash", "map"]
-    })
+    }),
+    new MiniCssExtractPlugin({
+      filename: "css/[name].css" //个人习惯将css文件放在单独目录下
+    }),
+    new OptimizeCssPlugin()
   ],
 
   devServer: {
@@ -125,5 +137,5 @@ module.exports = {
     compress: true //是否启用 gzip 压缩
   },
 
-  devtool: "cheap-module-eval-source-map" //开发环境下使用
+  devtool: isDev ? "cheap-module-eval-source-map" : "source-map"
 };
